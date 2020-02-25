@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Todo from '../components/Todo';
 
 const x = 2;
 
@@ -30,6 +31,7 @@ class App extends Component {
             <div>
                 <h1>{this.state.title}</h1>
                 <input onChange={this.handleChange} name='input_box' type='input' placeholder='Enter a title'/>
+                <Todo></Todo>
             </div>
         )
     }
