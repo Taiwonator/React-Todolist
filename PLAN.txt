@@ -1,0 +1,3 @@
+- In TodoList have todos (notes as props to TodoList)
+- State will be in TodoList
+- Props in TodoList have binded functions which are passed down to children which use them with the user input (input value for example)
