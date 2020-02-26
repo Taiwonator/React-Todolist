@@ -12,7 +12,8 @@ module.exports = {
             {
                 test: /\.js$/, 
                 exclude: /node_modules/, 
-                use: {
+                use: [
+                {
                     loader: 'babel-loader',
                     options: {
                         presets: [
@@ -24,13 +25,16 @@ module.exports = {
                             "@babel/plugin-proposal-class-properties"
                         ]
                     }
-                }
-            }
-        ]
+                }, 
+                // {loader: 'style-loader'}, {loader: 'css-loader'}, {loader: 'sass-loader'}
+                ]
+            }, 
+            { test: /\.css$/, loader: "style-loader!css-loader"}
+        ], 
     }, 
     plugins: [
         new HTMLWebpackPlugin({
             template: './src/index.html'
         })
-    ]
+    ], 
 }

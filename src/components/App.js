@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Todo from '../components/Todo';
+import TodoList from '../components/TodoList';
 
 const x = 2;
 
@@ -28,11 +28,7 @@ class App extends Component {
 
     render() {
             return (
-            <div>
-                <h1>{this.state.title}</h1>
-                <input onChange={this.handleChange} name='input_box' type='input' placeholder='Enter a title'/>
-                <Todo></Todo>
-            </div>
+            <TodoList></TodoList>
         )
     }
 }
