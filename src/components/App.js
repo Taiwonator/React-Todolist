@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import '../styles/index.scss'
+import PhoneBody from '../components/PhoneBody';
 
 class App extends Component {
 
@@ -9,7 +10,7 @@ class App extends Component {
 
     render() {
         return (
-            <div/>
+            <PhoneBody/>
         )
     }
 }
