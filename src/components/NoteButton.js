@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 const NoteButton = (props) => {
 
     const foo = () => {
-        console.log("Hello");
+        // props.updateValue
     }
     
     return(
@@ -16,7 +16,7 @@ const NoteButton = (props) => {
                 </svg>
             </button>
             <div className='inputBox'>
-                <input placeholder='Enter an activity :)' onChange={foo}/>
+                <input placeholder='Enter an activity :)' onChange={foo} value={props.userInput}/>
             </div>
         </div>
     )

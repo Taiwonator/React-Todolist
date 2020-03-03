@@ -26,11 +26,12 @@ class PhoneBody extends Component {
         )
         setTimeout(() => console.log(`ADDING_NOTE: ${this.state.class_states.ADDING_NOTE}`), 1);       
     }
+    
 
     render() {
         return(
             <div className='phoneBody'>
-                <TopBar classStates={this.state.class_states} toggleAddingNote={this.noteButtonClick}/>
+                <TopBar classStates={this.state.class_states} userInput={this.state.user_input} toggleAddingNote={this.noteButtonClick}/>
                 <NoteBody />
             </div>
         )

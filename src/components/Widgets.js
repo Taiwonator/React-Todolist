@@ -7,7 +7,7 @@ const Widgets = (props) => (
     <div className='widgets'>
         <NoteCounter />
         <ArrowButtons />
-        <NoteButton classStates={props.classStates} toggleAddingNote={props.toggleAddingNote}/>
+        <NoteButton classStates={props.classStates} userInput={props.userInput} toggleAddingNote={props.toggleAddingNote}/>
     </div>
 )
 
