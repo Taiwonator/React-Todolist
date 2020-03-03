@@ -1,4 +1,7 @@
 @import url("https://use.typekit.net/rjp3ykw.css");
+@import "../scss/fontawesome.scss";
+@import "../scss/solid.scss";
+@import "../scss/icons.scss";
 
 $main_color: #330033;
 $main_color_light: rgba(51, 0, 51, .95);
@@ -516,6 +519,5 @@ body {
 
         }
     }
-
 
 }

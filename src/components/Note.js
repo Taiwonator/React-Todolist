@@ -11,7 +11,7 @@ const Note = (props) => {
                 </label>
                 <div className="right">
                     <h4 className="time">{props.time}</h4>
-                    <div className="delete"><i className="far fa-trash-alt"></i></div>
+                    <div onClick={() => props.deleteNote(props.id)} className="delete"><i className="fa fa-trash-alt"></i></div>
                 </div>
             </div>
         <div className="line"></div>

@@ -9,7 +9,7 @@ class NoteBody extends Component {
     returnNotes() {
         const notes = this.props.notes;
         const list_notes = notes.map(note => (
-            <Note key={note.id} id={note.id} isComplete={note.is_complete} text={note.text} time={note.time} toggleComplete={this.props.toggleComplete}/>
+            <Note key={note.id} id={note.id} isComplete={note.is_complete} text={note.text} time={note.time} toggleComplete={this.props.toggleComplete} deleteNote={this.props.deleteNote}/>
         ));
         return list_notes;
     }

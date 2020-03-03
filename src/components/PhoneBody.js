@@ -81,14 +81,14 @@ class PhoneBody extends Component {
     }
 
     addNote = () => {
-        console.log("Adding....");
+        // console.log("Adding....");
         let new_note = new NoteClass(this.state.user_input);
         this.state.today_notes.unshift(new_note);
 
         this.setState(prevState => ({ 
             user_input: '', 
             class_states: {
-                ADDING_NOTE: false, 
+                ADDING_NOTE: true, 
                 EMPTY_INPUT: true
             }
         }))
@@ -97,16 +97,36 @@ class PhoneBody extends Component {
     toggleNoteById = (id) => {
         const notes = this.state.today_notes;
         let note = notes.filter(x => x["id"] == id)[0];
-        console.log(note.is_complete);
+        // console.log(note.is_complete);
         note.is_complete = !note.is_complete;
+        this.setState(prevState => ({ //confusing
+           ...this.state
+        }))
+    }
+
+    deleteNote = (id) => {
+        const notes = this.state.today_notes;
+        let new_notes = notes.filter(x => x["id"] != id);
+        this.setState(prevState => ({ //confusing
+           today_notes: new_notes
+        }))    }
+
+    handleKeyDown = (e) => {
+        if(e.code == 'Enter') {
+            if(!this.state.class_states.EMPTY_INPUT) {
+                this.addNote()
+            } else {
+                this.noteButtonClick();
+            }
+        }
     }
     
 
     render() {
         return(
-            <div className='phoneBody'>
+            <div className='phoneBody' onKeyDown={() => this.handleKeyDown(event)}>
                 <TopBar classStates={this.state.class_states} userInput={this.state.user_input} toggleAddingNote={this.noteButtonClick} updateUserInput={() => this.updateUserInput(event)} addNote={this.addNote}/>
-                <NoteBody notes={this.state.today_notes} toggleComplete={this.toggleNoteById}/>
+                <NoteBody notes={this.state.today_notes} toggleComplete={this.toggleNoteById} deleteNote={this.deleteNote}/>
             </div>
         )
     }
