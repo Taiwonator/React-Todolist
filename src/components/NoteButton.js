@@ -11,6 +11,7 @@ const NoteButton = (props) => {
             props.toggleAddingNote();
         } else {
             console.log("ADD NOTE");
+            props.addNote();
         }
     }
     
