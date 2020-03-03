@@ -3,20 +3,13 @@ import NoteCounter from '../components/NoteCounter';
 import ArrowButtons from '../components/ArrowButtons';
 import NoteButton from '../components/NoteButton';
 
-class Widgets extends Component {
-    constructor () {
-        super();
-    }
+const Widgets = (props) => (
+    <div className='widgets'>
+        <NoteCounter />
+        <ArrowButtons />
+        <NoteButton classStates={props.classStates} toggleAddingNote={props.toggleAddingNote}/>
+    </div>
+)
 
-    render() {
-        return (
-            <div className='widgets'>
-                <NoteCounter />
-                <ArrowButtons />
-                <NoteButton />
-            </div>
-        )
-    }
-}
 
 export default Widgets;

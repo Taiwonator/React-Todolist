@@ -1,7 +1,9 @@
 @import url("https://use.typekit.net/rjp3ykw.css");
 
 $main_color: #330033;
+$main_color_light: rgba(51, 0, 51, .95);
 $main_font: noto-sans, sans-serif;
+$grey: #4e4c4c;
 
 @mixin for-phone {
     @media (max-width: 444px) {
@@ -15,9 +17,25 @@ $main_font: noto-sans, sans-serif;
     font-family: $main_font;
 }
 
+a {
+    text-decoration: none;
+}
+
 button {
     border: none;
     outline: none;
+}
+
+textarea:focus, input:focus{
+    outline: none;
+}
+
+input::selection {
+    background-color: #EAE1F1;
+}
+
+input::placeholder {
+    color: lightgrey;
 }
 
 .cls-1 {
@@ -74,7 +92,7 @@ body {
                 h3 {
                     font-size: 16px;
                     font-weight: 500;
-                    color: #9e96a2;
+                    color: $grey;
 
                     span {
                         font-weight: 300;
@@ -274,7 +292,82 @@ body {
                     }
                 }
 
+                .emptyInput {
+
+                    .noteButton {
+                        background: $grey !important;
+
+                        &:hover {
+                            background-color: $grey;
+                        }
+
+                        &:active {
+                            filter: unset;
+                        }
+                    }
+                
+                    .inputBox {
+                        border-color: $grey !important; 
+
+                        input {
+                            border-color: rgba(118, 118, 118, .95) !important; 
+                        }
+                    }
+                
+                    svg {
+                        transform: translate(-50%, -50%) rotate(45deg) !important;
+                    }
+
+                }
+
             }
+        }
+
+        .addNote {
+            height: 120px;
+            margin-bottom: 10px;
+
+            .widgets {
+                justify-content: flex-end;
+
+                .noteCounter {
+                    opacity: 0;
+                    display: none;
+                }
+
+                .arrowButtons {
+                    opacity: 0;
+                    display: none;
+                }
+
+                .noteButtonContainer {
+                    position: relative;
+                    // left: -22px;
+                    z-index: 1;
+
+                    .inputBox {
+                        width: 315px;
+
+                        @include for-phone() {
+                            width: 250px;
+                        }
+    
+                        input {
+                            width: calc(100% - 80px);
+                            padding: 0 15px;
+                            position: absolute;
+                            left: 43%;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                            border: none;
+                            border-bottom: solid $main_color_light .25px;
+                            color: #82829C;
+                            display: block;
+                        }
+                    }
+                } 
+            }
+            
         }
     }
 

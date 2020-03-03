@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import TopBarText from '../components/TopBarText';
 import Widgets from '../components/Widgets';
 
-const TopBar = () => (
-    <div className='topBar'>
+
+const TopBar = (props) => (
+    <div className={`topBar ${props.classStates.ADDING_NOTE ? 'addNote' : ''}`}>
         <TopBarText />
-        <Widgets />
+        <Widgets classStates={props.classStates} toggleAddingNote={props.toggleAddingNote}/>
     </div> 
 )
 
