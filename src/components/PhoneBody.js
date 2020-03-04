@@ -433,6 +433,7 @@ class PhoneBody extends Component {
         this.setState(prevState => ({ 
             user_input: '', 
             class_states: {
+                TODAY: prevState.class_states.TODAY,
                 ADDING_NOTE: true, 
                 EMPTY_INPUT: true
             }
