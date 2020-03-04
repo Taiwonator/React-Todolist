@@ -26,6 +26,11 @@ class PhoneBody extends Component {
                 month: '',
                 year: ''
             },
+            key_position: {
+                position: 0,
+                min: 0,
+                max: 0
+            },
             today_notes: notes_array
         }
 
@@ -42,7 +47,8 @@ class PhoneBody extends Component {
         {
             key
         }]
-        let this_month_notes = all_notes.filter(x => x['key'] == key)[0];
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        let this_month_notes = all_notes.filter(x => x['key'] == key)[note_index];
 
         this_month_notes['days'] = {};
 
@@ -78,9 +84,13 @@ class PhoneBody extends Component {
 
     createNotesAt = (day, month, year) => {
 
-        let key = this.return_month(this.state.selected_date.month) + this.state.selected_date.year;
         let all_notes = this.state.all_notes;
+
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+
+        let key = this.return_month(month) + year;
         let this_month_notes = all_notes.filter(x => x['key'] == key)[0];
+
         if(this_month_notes['days'][day] == undefined) {
             this_month_notes['days'][day] = [];
         } else {
@@ -92,11 +102,43 @@ class PhoneBody extends Component {
         }))
 
         console.log(this.state.all_notes);
+    }
 
-        // if(this.state.all_notes[0]['days'][day] == undefined) {
-        // } else {
-        //     console.log("NOTES FOUND");
-        // }
+    createMonthAt = (month, year, forward, pos, min_value, max_value) => {
+        let all_notes = this.state.all_notes;
+
+        let position = pos;
+        let min = min_value;
+        let max = max_value;
+
+        let key = this.return_month(month) + year;
+        const note_index = this.notesIndex(pos, min_value);
+
+        if(position >= max || position <= min) {
+            if(forward) {
+                all_notes.push({});
+            } else {
+                all_notes.unshift({});
+            }
+            all_notes[note_index]['key'] = this.return_month(month) + year;
+            all_notes[note_index]['days'] = {};
+        } else {
+            console.log("position:", position, " min: ", min, " max:", max);
+        }
+  
+        this.setState(prevState => ({
+            all_notes,
+            key_position: {
+                ...this.state.key_position,
+                position, max, min
+            }
+        }))
+
+        if(forward) {
+            setTimeout(() => this.createNotesAt(1, month, year), 1);
+        } else {
+            setTimeout(() => this.createNotesAt(this.get_days_in_month(month, year), month, year), 1);
+        }
     }
 
     get_days_in_month = (month,year) => {
@@ -109,6 +151,8 @@ class PhoneBody extends Component {
 
         let day_of_week;
         let day_of_month;
+
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
 
         if(this.state.selected_date.day_of_month < days_in_month) {
             day_of_month = this.state.selected_date.day_of_month + 1;
@@ -123,7 +167,7 @@ class PhoneBody extends Component {
                     ...this.state.selected_date,
                     day_of_week, day_of_month
                 },
-                today_notes: this.state.all_notes[0]['days'][day_of_month]
+                today_notes: this.state.all_notes[note_index]['days'][day_of_month]
             }))
         } else {
             this.forwardMonth();
@@ -138,6 +182,8 @@ class PhoneBody extends Component {
         let day_of_week;
         let day_of_month; 
 
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+
         if(this.state.selected_date.day_of_month > 1) {
             day_of_month = this.state.selected_date.day_of_month - 1;
             this.createNotesAt(day_of_month, this.state.selected_date.month, this.state.selected_date.year);
@@ -151,7 +197,7 @@ class PhoneBody extends Component {
                     ...this.state.selected_date,
                     day_of_week, day_of_month
                 }, 
-                today_notes: this.state.all_notes[0]['days'][day_of_month]
+                today_notes: this.state.all_notes[note_index]['days'][day_of_month]
             }))
         } else {
             this.backMonth();
@@ -160,9 +206,13 @@ class PhoneBody extends Component {
         //console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
     }
 
-    mod = (n, m) => {
-        return ((n % m) + m) % m;
-    }
+    mod = (n, m) => (
+        ((n % m) + m) % m
+    )
+
+    notesIndex = (pos, min) => (
+        pos + Math.abs(min)
+    )
 
     forwardMonth = () => {
         let days_in_this_month = this.get_days_in_month(this.state.selected_date.month, this.state.selected_date.year);
@@ -171,6 +221,9 @@ class PhoneBody extends Component {
         let day_of_month = 1;
         let month;
         let year;
+
+        let position = this.state.key_position.position + 1;
+        let max = this.state.key_position.max;
         
         if(this.state.selected_date.month < 11) {
             month = this.state.selected_date.month + 1;
@@ -179,6 +232,14 @@ class PhoneBody extends Component {
             month = 0;
             year = this.state.selected_date.year + 1;
         }
+
+        if(position > max) {
+            max = position;
+        }
+        this.createMonthAt(month, year, true, position, this.state.key_position.min, max);
+
+        // console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`);
+
 
         day_of_week = (this.mod(this.state.selected_date.day_of_week + 1 + (days_in_this_month - this.state.selected_date.day_of_month), 7));
         if(day_of_week == 0) {
@@ -201,6 +262,9 @@ class PhoneBody extends Component {
         let month;
         let year;
 
+        let position = this.state.key_position.position - 1;
+        let min = this.state.key_position.min;
+
         if(this.state.selected_date.month > 0) {
             month = this.state.selected_date.month - 1;
             year = this.state.selected_date.year;
@@ -208,6 +272,14 @@ class PhoneBody extends Component {
             month = 11;
             year = this.state.selected_date.year - 1;
         }
+
+        if(position < min) {
+            min = position;
+        }
+        this.createMonthAt(month, year, false, position, min, this.state.key_position.max);
+
+        // setTimeout(() => console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`), 1);
+
 
         day_of_week = (this.mod(this.state.selected_date.day_of_week - this.state.selected_date.day_of_month, 7));
         if(day_of_week == 0) {
