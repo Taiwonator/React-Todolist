@@ -246,6 +246,36 @@ body {
                             }
                         }
                     }
+                    
+                    .todayButton {
+                        background-color: $main_color;
+                        border-radius: 100px;
+                        position: relative;
+                        transition: all .5s ease-in-out;
+                        width: 0px;
+                        height: 0px;
+                        opacity: 0;
+
+                        i {
+                            position: absolute;
+                            left: 50%;
+                            top: 50%;
+                            transform: translate(-50%, -50%);
+                            font-size: 25px;
+                            color: white;
+                        }
+                    }
+
+                    .todayButtonActive {
+                        width: 50px;
+                        height: 50px;
+                        opacity: 1;
+                    }
+
+                }
+
+                .larger {
+                    width: 155px !important;
                 }
 
                 .noteButtonContainer {
@@ -410,17 +440,6 @@ body {
                             width: 0;
                         }
 
-                        
-
-                        input:checked ~ .checkmark {
-                            background-color: $grey;
-                            border: none;
-                        }
-
-                        input:checked ~ .checkmark:after {
-                            display:block;
-                        }
-
                         .checkmark {
                             position: absolute;
                             left: 0;
@@ -430,21 +449,6 @@ body {
                             border: $grey solid 1px;
                             border-radius: 3px;
                             box-shadow: 0px 1px 2px rgba(0,0,0,0.16);
-
-                            &:after {
-                                content: "";
-                                position: absolute;
-                                display:none;
-                                left: 6.5px;
-                                top: 2px;
-                                width: 5px;
-                                height: 10px;
-                                border: solid white;
-                                border-width: 0 2px 2px 0;
-                                -webkit-transform: rotate(45deg);
-                                -ms-transform: rotate(45deg);
-                                transform: rotate(45deg);
-                            }
                         } 
                     }
 
@@ -492,6 +496,25 @@ body {
 
                     label {
                         font-weight: 300;
+
+                        .checkmark {
+                            background: $grey !important;
+
+                            &:after {
+                                content: "";
+                                position: absolute;
+                                display:block !important;
+                                left: 6px;
+                                top: 1.5px;
+                                width: 5px;
+                                height: 10px;
+                                border: solid white;
+                                border-width: 0 2px 2px 0;
+                                -webkit-transform: rotate(45deg);
+                                -ms-transform: rotate(45deg);
+                                transform: rotate(45deg);
+                            }
+                        } 
                     }
 
                     .delete {

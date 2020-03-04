@@ -16,7 +16,8 @@ const TopBar = (props) => (
                  backDay={props.backDay}
                  forwardDay={props.forwardDay}
                  backMonth={props.backMonth}
-                 forwardMonth={props.forwardMonth}/>
+                 forwardMonth={props.forwardMonth}
+                 goToToday={props.goToToday}/>
     </div> 
 )
 

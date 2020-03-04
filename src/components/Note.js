@@ -2,11 +2,15 @@ import React, {Component} from 'react';
 
 const Note = (props) => {
 
+    const toggle = () => {
+        props.toggleComplete(props.id);
+    }
+
     return (
         <div className={`note ${props.isComplete ? 'complete' : ''}`}>
             <div className="content">
                 <label className="left">{props.text} {props.isComplete}
-                    <input onChange={() => props.toggleComplete(props.id)} type="checkbox" />
+                    <input onChange={() => toggle()} type="checkbox" />
                     <span className="checkmark"></span>
                 </label>
                 <div className="right">

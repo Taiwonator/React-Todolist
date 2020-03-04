@@ -15,17 +15,13 @@ class PhoneBody extends Component {
         this.state = {
             class_states: {
                 EMPTY_INPUT: true, 
-                ADDING_NOTE: false
+                ADDING_NOTE: false, 
+                TODAY: true
             }, 
 
             user_input: '', 
             all_notes: [{}],
-            selected_date: {
-                day_of_week: '',
-                day_of_month: '', 
-                month: '',
-                year: ''
-            },
+            selected_date: this.setDate(),
             key_position: {
                 position: 0,
                 min: 0,
@@ -34,15 +30,21 @@ class PhoneBody extends Component {
             today_notes: notes_array
         }
 
+        this.state.all_notes = this.createNotesObject();
+
     }
 
     componentDidMount() {
-        this.setDate();
-        setTimeout(() => this.createNotesObject(), 1);
     }
 
     createNotesObject() {
-        let key = this.return_month(this.state.selected_date.month) + this.state.selected_date.year;
+        const date = new Date();
+        const day_of_week = date.getDay();
+        const day_of_month = date.getDate();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+
+        let key = this.return_month(month) + year;
         let all_notes = [
         {
             key
@@ -62,9 +64,11 @@ class PhoneBody extends Component {
         this_month_notes['days'][5] = [];
         this_month_notes['days'][5].unshift(note_1);
 
-        this.setState(prevState => ({
-            all_notes
-        }))
+        // this.setState(prevState => ({
+        //     all_notes
+        // }))
+
+        return all_notes;
     }
 
     setDate = () => {
@@ -75,11 +79,15 @@ class PhoneBody extends Component {
         const year = date.getFullYear();
         ////console.log(`Day of week: ${day_of_week}, Day of month: ${day_of_month}, Month: ${month}, Year: ${year}`);
 
-        this.setState(prevState => ({
-            selected_date: {
-                day_of_week, day_of_month, month, year
-            }
-        }))
+        // this.setState(prevState => ({
+        //     selected_date: {
+        //         day_of_week, day_of_month, month, year
+        //     }
+        // }))
+
+        return ({
+            day_of_week, day_of_month, month, year
+        })
     }
 
     createNotesAt = (day, month, year) => {
@@ -92,16 +100,17 @@ class PhoneBody extends Component {
         let this_month_notes = all_notes.filter(x => x['key'] == key)[0];
 
         if(this_month_notes['days'][day] == undefined) {
+            // console.log(this_month_notes);
             this_month_notes['days'][day] = [];
         } else {
-            console.log("NOTES FOUND");
+            // console.log("NOTES FOUND");
         }
 
         this.setState(prevState => ({
             all_notes
         }))
 
-        console.log(this.state.all_notes);
+        console.log("NOTES: ", this.state.all_notes);
     }
 
     createMonthAt = (month, year, forward, pos, min_value, max_value) => {
@@ -114,16 +123,25 @@ class PhoneBody extends Component {
         let key = this.return_month(month) + year;
         const note_index = this.notesIndex(pos, min_value);
 
-        if(position >= max || position <= min) {
-            if(forward) {
-                all_notes.push({});
-            } else {
-                all_notes.unshift({});
+        console.log("position:", position, " min: ", min, " max:", max);
+
+        if(forward) {
+            if(position == max){
+                console.log(note_index);
+                if(all_notes[note_index] == undefined) {
+                    all_notes.push({});
+                    all_notes[note_index]['key'] = this.return_month(month) + year;
+                    all_notes[note_index]['days'] = {};
+                }
             }
-            all_notes[note_index]['key'] = this.return_month(month) + year;
-            all_notes[note_index]['days'] = {};
-        } else {
-            console.log("position:", position, " min: ", min, " max:", max);
+         } else {
+            if(position == min) {
+                if(all_notes[0]['key'] != this.return_month(month) + year) {
+                        all_notes.unshift({});
+                        all_notes[note_index]['key'] = this.return_month(month) + year;
+                        all_notes[note_index]['days'] = {};
+                }
+            }
         }
   
         this.setState(prevState => ({
@@ -145,6 +163,34 @@ class PhoneBody extends Component {
         month++;
         return new Date(year, month, 0).getDate();
     };
+
+    isToday = (day, month, year) => {
+        const date = new Date();
+        if(date.getDate() == day && date.getMonth() == month && date.getFullYear() == year) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+
+    goToToday = () => {
+        const date = new Date();
+        let day_of_week = date.getDay();
+        let day_of_month = date.getDate();
+        let month = date.getMonth();
+        let year = date.getFullYear();
+
+        this.setState(prevState => ({
+            selected_date: {
+                day_of_week, day_of_month, month, year
+            },
+            class_states: {
+                ...this.state.class_states,
+                TODAY: true
+            }
+        }))
+    }
 
     forwardDay = () => {
         let days_in_month = this.get_days_in_month(this.state.selected_date.month, this.state.selected_date.year);
@@ -173,6 +219,20 @@ class PhoneBody extends Component {
             this.forwardMonth();
         }
 
+        let TODAY = false;
+
+        if( this.isToday(day_of_month, this.state.selected_date.month, this.state.selected_date.year)) {
+            TODAY = true;
+        } else {
+            TODAY = false;
+        }
+
+        this.setState(prevState => ({
+            class_states: {
+                ...this.state.class_states,
+                TODAY
+            }
+        }))
         
         //console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
     }
@@ -202,6 +262,22 @@ class PhoneBody extends Component {
         } else {
             this.backMonth();
         }
+
+        let TODAY = false;
+
+        if( this.isToday(day_of_month, this.state.selected_date.month, this.state.selected_date.year)) {
+            TODAY = true;
+        } else {
+            TODAY = false;
+        }
+
+        this.setState(prevState => ({
+            class_states: {
+                ...this.state.class_states,
+                TODAY
+            }
+        }))
+
 
         //console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
     }
@@ -351,7 +427,8 @@ class PhoneBody extends Component {
     addNote = () => {
         // //console.log("Adding....");
         let new_note = new NoteClass(this.state.user_input);
-        this.state.today_notes.unshift(new_note);
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        this.state.all_notes[note_index]['days'][this.state.selected_date.day_of_month].unshift(new_note);
 
         this.setState(prevState => ({ 
             user_input: '', 
@@ -363,7 +440,8 @@ class PhoneBody extends Component {
     }
 
     toggleNoteById = (id) => {
-        const notes = this.state.today_notes;
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        const notes = this.state.all_notes[note_index]['days'][this.state.selected_date.day_of_month];
         let note = notes.filter(x => x["id"] == id)[0];
         // //console.log(note.is_complete);
         note.is_complete = !note.is_complete;
@@ -373,11 +451,19 @@ class PhoneBody extends Component {
     }
 
     deleteNote = (id) => {
-        const notes = this.state.today_notes;
-        let new_notes = notes.filter(x => x["id"] != id);
+        // const notes = this.state.today_notes;
+        const all_notes = this.state.all_notes;
+        // let new_notes = notes.filter(x => x["id"] != id);
+        const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        let new_all_notes = all_notes;
+        let new_notes = new_all_notes[note_index]['days'][this.state.selected_date.day_of_month].filter(x => x['id'] != id);
+        new_all_notes[note_index]['days'][this.state.selected_date.day_of_month] = new_notes;
+        console.log(new_all_notes);
+        
         this.setState(prevState => ({ //confusing
-           today_notes: new_notes
-        }))    }
+           all_notes: new_all_notes
+        }))    
+    }
 
     handleKeyDown = (e) => {
         if(e.code == 'Enter') {
@@ -387,6 +473,17 @@ class PhoneBody extends Component {
                 this.noteButtonClick();
             }
         }
+    }
+
+    returnNotes = () => {
+        // const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        // if(this.state.all_notes[note_index]['days'] != undefined) {
+        //     return (this.state.all_notes[note_index]['days'][this.state.selected_date.day_of_month]);
+        // }
+        return (
+            // this.state.today_notes,
+            this.state.all_notes
+        )
     }
     
 
@@ -403,9 +500,14 @@ class PhoneBody extends Component {
                         backDay={this.backDay}
                         forwardDay={this.forwardDay}
                         backMonth={this.backMonth}
-                        forwardMonth={this.forwardMonth}/>
+                        forwardMonth={this.forwardMonth}
+                        goToToday={this.goToToday}/>
 
-                <NoteBody notes={this.state.today_notes} toggleComplete={this.toggleNoteById} deleteNote={this.deleteNote}/>
+                <NoteBody all_notes={this.returnNotes()}
+                          toggleComplete={this.toggleNoteById} 
+                          deleteNote={this.deleteNote}
+                          noteIndex={() => this.notesIndex(this.state.key_position.position, this.state.key_position.min)}
+                          selectedDay={this.state.selected_date.day_of_month}/>
             </div>
         )
     }
