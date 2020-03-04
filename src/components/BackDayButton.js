@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
-const BackDayButton = () => (
-    <div className='backDayButton'>
+const BackDayButton = (props) => (
+    <div className='backDayButton' onClick={props.backDay}>
         <i />
     </div>
 )

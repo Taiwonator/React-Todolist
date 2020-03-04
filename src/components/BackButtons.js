@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import BackDayButton from '../components/BackDayButton';
 import BackMonthButton from '../components/BackMonthButton';
 
-const BackButtons = () => (
+const BackButtons = (props) => (
     <div className='backButtons'>
-        <BackMonthButton />
-        <BackDayButton />
+        <BackMonthButton backMonth={props.backMonth}/>
+        <BackDayButton backDay={props.backDay}/>
     </div>
 )
 

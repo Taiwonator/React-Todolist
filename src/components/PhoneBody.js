@@ -2,18 +2,15 @@ import React, {Component} from 'react';
 import TopBar from '../components/TopBar';
 import NoteBody from '../components/NoteBody';
 import NoteClass from '../classes/NoteClass';
-import Note from './Note';
 
 class PhoneBody extends Component {
 
     constructor() {
         super();
 
-        let note_1 = new NoteClass('Note 1');
-        let note_2 = new NoteClass('Note 2');
+        let note_1 = new NoteClass('Create Notes :)');
         let notes_array = [];
         notes_array.unshift(note_1);
-        notes_array.unshift(note_2);
         
         this.state = {
             class_states: {
@@ -24,12 +21,151 @@ class PhoneBody extends Component {
             user_input: '', 
             all_notes: [{}],
             selected_date: {
-                day: '', 
+                day_of_week: '',
+                day_of_month: '', 
                 month: '',
                 year: ''
             },
             today_notes: notes_array
         }
+
+    }
+
+    componentDidMount() {
+        this.setDate();
+    }
+
+    setDate = () => {
+        const date = new Date();
+        const day_of_week = date.getDay();
+        const day_of_month = date.getDate();
+        const month = date.getMonth();
+        const year = date.getFullYear();
+        console.log(`Day of week: ${day_of_week}, Day of month: ${day_of_month}, Month: ${month}, Year: ${year}`);
+
+        this.setState(prevState => ({
+            selected_date: {
+                day_of_week, day_of_month, month, year
+            }
+        }))
+    }
+
+    get_days_in_month = (month,year) => {
+        month++;
+        return new Date(year, month, 0).getDate();
+    };
+
+    forwardDay = () => {
+        let days_in_month = this.get_days_in_month(this.state.selected_date.month, this.state.selected_date.year);
+
+        let day_of_week;
+        let day_of_month;
+
+        if(this.state.selected_date.day_of_month < days_in_month) {
+            day_of_month = this.state.selected_date.day_of_month + 1;
+            if(this.state.selected_date.day_of_week < 7) {
+                day_of_week = this.state.selected_date.day_of_week + 1;
+            } else {
+                day_of_week = 1
+            }
+            this.setState(prevState => ({
+                selected_date: {
+                    ...this.state.selected_date,
+                    day_of_week, day_of_month
+                }
+            }))
+        } else {
+            this.forwardMonth();
+        }
+        
+        console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
+    }
+
+    backDay = () => {    
+
+        let day_of_week;
+        let day_of_month; 
+
+        if(this.state.selected_date.day_of_month > 1) {
+            day_of_month = this.state.selected_date.day_of_month - 1;
+            if(this.state.selected_date.day_of_week > 1) {
+                day_of_week = this.state.selected_date.day_of_week - 1;
+            } else {
+                day_of_week = 7;
+            }
+            this.setState(prevState => ({
+                selected_date: {
+                    ...this.state.selected_date,
+                    day_of_week, day_of_month
+                }
+            }))
+        } else {
+            this.backMonth();
+        }
+
+        console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
+    }
+
+    mod = (n, m) => {
+        return ((n % m) + m) % m;
+    }
+
+    forwardMonth = () => {
+        let days_in_this_month = this.get_days_in_month(this.state.selected_date.month, this.state.selected_date.year);
+
+        let day_of_week;
+        let day_of_month = 1;
+        let month;
+        let year;
+        
+        if(this.state.selected_date.month < 11) {
+            month = this.state.selected_date.month + 1;
+            year = this.state.selected_date.year;
+        } else {
+            month = 0;
+            year = this.state.selected_date.year + 1;
+        }
+
+        day_of_week = (this.mod(this.state.selected_date.day_of_week + 1 + (days_in_this_month - this.state.selected_date.day_of_month), 7));
+        if(day_of_week == 0) {
+            day_of_week = 7; //idk why this glitch happens
+        }
+    
+        this.setState(prevState => ({
+            selected_date: {
+                day_of_week, day_of_month, month, year
+            }
+        }))
+        
+    }
+
+    backMonth = () => {
+        let days_in_prev_month = this.get_days_in_month(this.state.selected_date.month - 1, this.state.selected_date.year);
+
+        let day_of_week;
+        let day_of_month = days_in_prev_month;
+        let month;
+        let year;
+
+        if(this.state.selected_date.month > 0) {
+            month = this.state.selected_date.month - 1;
+            year = this.state.selected_date.year;
+        } else {
+            month = 11;
+            year = this.state.selected_date.year - 1;
+        }
+
+        day_of_week = (this.mod(this.state.selected_date.day_of_week - this.state.selected_date.day_of_month, 7));
+        if(day_of_week == 0) {
+            day_of_week = 7; //idk why this glitch happens
+        }
+    
+        this.setState(prevState => ({
+            selected_date: {
+                day_of_week, day_of_month, month, year
+            }
+        }))
+        
     }
 
     noteButtonClick = () => {
@@ -60,6 +196,7 @@ class PhoneBody extends Component {
         } else {
             this.unsetEmptyInput();
         }
+        this.forwardMonth();
     }
 
     setEmptyInput = () => {
@@ -124,8 +261,19 @@ class PhoneBody extends Component {
 
     render() {
         return(
-            <div className='phoneBody' onKeyDown={() => this.handleKeyDown(event)}>
-                <TopBar classStates={this.state.class_states} userInput={this.state.user_input} toggleAddingNote={this.noteButtonClick} updateUserInput={() => this.updateUserInput(event)} addNote={this.addNote}/>
+            <div className={'phoneBody scrollbar'} onKeyDown={() => this.handleKeyDown(event)}>
+                <TopBar selectedDate={this.state.selected_date} 
+                        noteCount={this.state.today_notes.length} 
+                        classStates={this.state.class_states} 
+                        userInput={this.state.user_input} 
+                        toggleAddingNote={this.noteButtonClick} 
+                        updateUserInput={() => this.updateUserInput(event)} 
+                        addNote={this.addNote}
+                        backDay={this.backDay}
+                        forwardDay={this.forwardDay}
+                        backMonth={this.backMonth}
+                        forwardMonth={this.forwardMonth}/>
+
                 <NoteBody notes={this.state.today_notes} toggleComplete={this.toggleNoteById} deleteNote={this.deleteNote}/>
             </div>
         )

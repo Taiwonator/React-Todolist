@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
-const ForwardMonthButton = () => (
-    <div className='forwardMonthButton'>
+const ForwardMonthButton = (props) => (
+    <div className='forwardMonthButton' onClick={props.fowardMonth}>
         <i />
         <i />
     </div>

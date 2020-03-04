@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
-const BackMonthButton = () => (
-    <div className='backMonthButton'>
+const BackMonthButton = (props) => (
+    <div className='backMonthButton' onClick={props.backMonth}>
         <i />
         <i />
     </div>
