@@ -15,7 +15,6 @@ class NoteButton extends Component {
         if(this.props.classStates.EMPTY_INPUT) {
             this.props.toggleAddingNote();
         } else {
-            console.log("ADD NOTE");
             this.props.addNote();
         }
         

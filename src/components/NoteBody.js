@@ -8,6 +8,8 @@ class NoteBody extends Component {
     
     returnNotes =() => {
         let notes;
+        // console.log("Note index: ", this.props.noteIndex(), "All notes: ", this.props.all_notes);
+
         if(this.props.all_notes[this.props.noteIndex()]['days'][this.props.selectedDay] != undefined) {
             notes = this.props.all_notes[this.props.noteIndex()]['days'][this.props.selectedDay];
         } else {

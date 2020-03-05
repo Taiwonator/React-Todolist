@@ -25,7 +25,8 @@ class PhoneBody extends Component {
             key_position: {
                 position: 0,
                 min: 0,
-                max: 0
+                max: 0, 
+                today_pos: 0
             },
             today_notes: notes_array
         }
@@ -77,7 +78,7 @@ class PhoneBody extends Component {
         const day_of_month = date.getDate();
         const month = date.getMonth();
         const year = date.getFullYear();
-        ////console.log(`Day of week: ${day_of_week}, Day of month: ${day_of_month}, Month: ${month}, Year: ${year}`);
+        //////console.log(`Day of week: ${day_of_week}, Day of month: ${day_of_month}, Month: ${month}, Year: ${year}`);
 
         // this.setState(prevState => ({
         //     selected_date: {
@@ -110,7 +111,7 @@ class PhoneBody extends Component {
             all_notes
         }))
 
-        console.log("NOTES: ", this.state.all_notes);
+        // console.log("NOTES: ", this.state.all_notes);
     }
 
     createMonthAt = (month, year, forward, pos, min_value, max_value) => {
@@ -119,15 +120,16 @@ class PhoneBody extends Component {
         let position = pos;
         let min = min_value;
         let max = max_value;
+        let today_pos = this.state.key_position.today_pos;
 
         let key = this.return_month(month) + year;
         const note_index = this.notesIndex(pos, min_value);
 
-        console.log("position:", position, " min: ", min, " max:", max);
+        // console.log("position:", position, " min: ", min, " max:", max);
 
         if(forward) {
             if(position == max){
-                console.log(note_index);
+                //console.log(note_index);
                 if(all_notes[note_index] == undefined) {
                     all_notes.push({});
                     all_notes[note_index]['key'] = this.return_month(month) + year;
@@ -137,6 +139,7 @@ class PhoneBody extends Component {
          } else {
             if(position == min) {
                 if(all_notes[0]['key'] != this.return_month(month) + year) {
+                        today_pos += 1;
                         all_notes.unshift({});
                         all_notes[note_index]['key'] = this.return_month(month) + year;
                         all_notes[note_index]['days'] = {};
@@ -148,14 +151,14 @@ class PhoneBody extends Component {
             all_notes,
             key_position: {
                 ...this.state.key_position,
-                position, max, min
+                position, max, min, today_pos
             }
         }))
 
         if(forward) {
-            setTimeout(() => this.createNotesAt(1, month, year), 1);
+            this.createNotesAt(1, month, year)
         } else {
-            setTimeout(() => this.createNotesAt(this.get_days_in_month(month, year), month, year), 1);
+            this.createNotesAt(this.get_days_in_month(month, year), month, year)
         }
     }
 
@@ -181,6 +184,9 @@ class PhoneBody extends Component {
         let month = date.getMonth();
         let year = date.getFullYear();
 
+        let position =  0;
+        // console.log(position);
+
         this.setState(prevState => ({
             selected_date: {
                 day_of_week, day_of_month, month, year
@@ -188,6 +194,10 @@ class PhoneBody extends Component {
             class_states: {
                 ...this.state.class_states,
                 TODAY: true
+            }, 
+            key_position: {
+                ...this.state.key_position, 
+                position
             }
         }))
     }
@@ -234,7 +244,8 @@ class PhoneBody extends Component {
             }
         }))
         
-        //console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
+        
+        ////console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
     }
 
     backDay = () => {    
@@ -279,16 +290,17 @@ class PhoneBody extends Component {
         }))
 
 
-        //console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
+        ////console.log(`Day of week: ${this.state.selected_date.day_of_week}, Day of month: ${this.state.selected_date.day_of_month}, Month: ${this.state.selected_date.month}, Year: ${this.state.selected_date.year}`);
     }
 
     mod = (n, m) => (
         ((n % m) + m) % m
     )
 
-    notesIndex = (pos, min) => (
-        pos + Math.abs(min)
-    )
+    notesIndex = (pos, min) => {
+        // console.log("pos", pos, "  min: ", min, "max", this.state.key_position.max);
+        return pos + Math.abs(min);
+    }
 
     forwardMonth = () => {
         let days_in_this_month = this.get_days_in_month(this.state.selected_date.month, this.state.selected_date.year);
@@ -314,17 +326,29 @@ class PhoneBody extends Component {
         }
         this.createMonthAt(month, year, true, position, this.state.key_position.min, max);
 
-        // console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`);
+        // //console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`);
 
 
         day_of_week = (this.mod(this.state.selected_date.day_of_week + 1 + (days_in_this_month - this.state.selected_date.day_of_month), 7));
         if(day_of_week == 0) {
             day_of_week = 7; //idk why this glitch happens
         }
+
+        let TODAY = false;
+
+        if( this.isToday(day_of_month, month, year)) {
+            TODAY = true;
+        } else {
+            TODAY = false;
+        }
     
         this.setState(prevState => ({
             selected_date: {
                 day_of_week, day_of_month, month, year
+            }, 
+            class_states: {
+                ...this.state.class_states,
+                TODAY
             }
         }))
         
@@ -354,17 +378,29 @@ class PhoneBody extends Component {
         }
         this.createMonthAt(month, year, false, position, min, this.state.key_position.max);
 
-        // setTimeout(() => console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`), 1);
+        // setTimeout(() => //console.log(`position: ${position}, min: ${this.state.key_position.min}, max: ${this.state.key_position.max}`), 1);
 
 
         day_of_week = (this.mod(this.state.selected_date.day_of_week - this.state.selected_date.day_of_month, 7));
         if(day_of_week == 0) {
             day_of_week = 7; //idk why this glitch happens
         }
+
+        let TODAY = false;
+
+        if( this.isToday(day_of_month, month, year)) {
+            TODAY = true;
+        } else {
+            TODAY = false;
+        }
     
         this.setState(prevState => ({
             selected_date: {
                 day_of_week, day_of_month, month, year
+            }, 
+            class_states: {
+                ...this.state.class_states,
+                TODAY
             }
         }))
         
@@ -384,7 +420,7 @@ class PhoneBody extends Component {
                 }
             })
         )
-        // setTimeout(() => //console.log(`ADDING_NOTE: ${this.state.class_states.ADDING_NOTE}`), 1);   
+        // setTimeout(() => ////console.log(`ADDING_NOTE: ${this.state.class_states.ADDING_NOTE}`), 1);   
         
         
         // this.setState(prevState => ({
@@ -425,9 +461,10 @@ class PhoneBody extends Component {
     }
 
     addNote = () => {
-        // //console.log("Adding....");
+        // ////console.log("Adding....");
         let new_note = new NoteClass(this.state.user_input);
         const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
+        //console.log(this.state.all_notes[note_index]);
         this.state.all_notes[note_index]['days'][this.state.selected_date.day_of_month].unshift(new_note);
 
         this.setState(prevState => ({ 
@@ -444,7 +481,7 @@ class PhoneBody extends Component {
         const note_index = this.notesIndex(this.state.key_position.position, this.state.key_position.min);
         const notes = this.state.all_notes[note_index]['days'][this.state.selected_date.day_of_month];
         let note = notes.filter(x => x["id"] == id)[0];
-        // //console.log(note.is_complete);
+        // ////console.log(note.is_complete);
         note.is_complete = !note.is_complete;
         this.setState(prevState => ({ //confusing
            ...this.state
@@ -459,7 +496,7 @@ class PhoneBody extends Component {
         let new_all_notes = all_notes;
         let new_notes = new_all_notes[note_index]['days'][this.state.selected_date.day_of_month].filter(x => x['id'] != id);
         new_all_notes[note_index]['days'][this.state.selected_date.day_of_month] = new_notes;
-        console.log(new_all_notes);
+        //console.log(new_all_notes);
         
         this.setState(prevState => ({ //confusing
            all_notes: new_all_notes
@@ -492,7 +529,7 @@ class PhoneBody extends Component {
         return(
             <div className={'phoneBody scrollbar'} onKeyDown={() => this.handleKeyDown(event)}>
                 <TopBar selectedDate={this.state.selected_date} 
-                        noteCount={this.state.today_notes.length} 
+                        noteCount={this.state.all_notes[this.notesIndex(this.state.key_position.position, this.state.key_position.min)]['days'][this.state.selected_date.day_of_month].length} 
                         classStates={this.state.class_states} 
                         userInput={this.state.user_input} 
                         toggleAddingNote={this.noteButtonClick} 
